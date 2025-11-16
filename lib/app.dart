@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'core/theme/app_theme.dart';
-import 'features/auth/presentation/pages/login_page.dart';
+import 'features/auth/presentation/pages/onboarding_page.dart';
 import 'features/home/presentation/pages/home_page.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 
@@ -14,17 +13,17 @@ class ChurchApp extends ConsumerWidget {
     final authState = ref.watch(authStateProvider);
 
     return MaterialApp(
-      title: 'Church App',
+      title: 'Voice of Faith',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,
       home: authState.when(
-        data: (user) => user != null ? const HomePage() : const LoginPage(),
+        data: (user) => user != null ? const HomePage() : const OnboardingPage(),
         loading: () => const Scaffold(
           body: Center(child: CircularProgressIndicator()),
         ),
-        error: (_, __) => const LoginPage(),
+        error: (_, __) => const OnboardingPage(),
       ),
     );
   }
