@@ -5,8 +5,8 @@ import 'features/auth/presentation/pages/onboarding_page.dart';
 import 'features/home/presentation/pages/home_page.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 
-class ChurchApp extends ConsumerWidget {
-  const ChurchApp({super.key});
+class MyApp extends ConsumerWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

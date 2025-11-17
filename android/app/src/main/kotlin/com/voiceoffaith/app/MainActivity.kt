@@ -1,4 +1,4 @@
-package com.example.voice_of_faith
+package com.voiceoffaith.app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -32,6 +32,7 @@ dependencies:
     sdk: flutter
 
   # State Management
+  change_app_package_name: ^1.1.0
   flutter_riverpod: ^2.4.9
   riverpod_annotation: ^2.3.3
 
@@ -51,7 +52,7 @@ dependencies:
 
   # Media & Files
   image_picker: ^1.0.5
-  file_picker: ^6.1.1
+  file_picker: ^8.1.2
   video_player: ^2.8.1
   audioplayers: ^5.2.1
   path_provider: ^2.1.1
