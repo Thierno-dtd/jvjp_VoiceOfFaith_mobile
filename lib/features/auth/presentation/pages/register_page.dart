@@ -42,34 +42,47 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       return;
     }
 
-    await ref.read(signUpProvider.notifier).signUp(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-          displayName: _nameController.text.trim(),
-        );
+    try {
+      await ref.read(signUpProvider.notifier).signUp(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        displayName: _nameController.text.trim(),
+      );
+    } catch (e) {
+      // L'erreur sera gérée par le listener
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final signUpState = ref.watch(signUpProvider);
 
-    ref.listen<AsyncValue<void>>(signUpProvider, (_, state) {
+    // Écouter les changements d'état d'inscription
+    ref.listen<AsyncValue<void>>(signUpProvider, (previous, state) {
       state.whenOrNull(
         data: (_) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Account created successfully!'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          // Succès
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Compte créé avec succès !'),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+          // La navigation sera gérée automatiquement par app.dart
         },
         error: (error, _) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(error.toString()),
-              backgroundColor: Colors.red,
-            ),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(error.toString()),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          }
         },
       );
     });
@@ -424,20 +437,20 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     ),
                     child: signUpState.isLoading
                         ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
                         : const Text(
-                            'Create Account',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                      'Create Account',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),

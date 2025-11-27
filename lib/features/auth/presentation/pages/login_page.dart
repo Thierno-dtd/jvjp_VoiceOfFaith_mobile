@@ -26,25 +26,46 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
-    await ref.read(signInProvider.notifier).signIn(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        );
+    try {
+      await ref.read(signInProvider.notifier).signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+    } catch (e) {
+      // L'erreur sera gérée par le listener
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final signInState = ref.watch(signInProvider);
 
-    ref.listen<AsyncValue<void>>(signInProvider, (_, state) {
+    // Écouter les changements d'état de connexion
+    ref.listen<AsyncValue<void>>(signInProvider, (previous, state) {
       state.whenOrNull(
+        data: (_) {
+          // Succès - afficher un message
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Connexion réussie !'),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+          // La navigation sera gérée automatiquement par app.dart via authStateProvider
+        },
         error: (error, _) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(error.toString()),
-              backgroundColor: Colors.red,
-            ),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(error.toString()),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          }
         },
       );
     });
@@ -260,20 +281,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                     child: signInState.isLoading
                         ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
                         : const Text(
-                            'Login',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                      'Login',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),

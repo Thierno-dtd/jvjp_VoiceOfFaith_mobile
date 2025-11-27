@@ -17,15 +17,9 @@ final authServiceProvider = Provider<dynamic>((ref) {
 final authStateProvider = StreamProvider<dynamic>((ref) {
   final authService = ref.watch(authServiceProvider);
   if (AppConfig.useMockData) {
-    return (authService as MockAuthService).authStateChanges.map((user) {
-      print("AUTH STREAM (MOCK) = $user");
-      return user;
-    });
+    return (authService as MockAuthService).authStateChanges;
   }
-  return (authService as AuthService).authStateChanges.map((user) {
-    print("AUTH STREAM (FIREBASE) = $user");
-    return user;
-  });
+  return (authService as AuthService).authStateChanges;
 });
 
 // Provider des données utilisateur actuelles
@@ -83,6 +77,8 @@ class SignUpNotifier extends StateNotifier<AsyncValue<void>> {
           displayName: displayName,
         );
       }
+      // Attendre un peu pour que l'état d'authentification se propage
+      await Future.delayed(const Duration(milliseconds: 500));
     });
   }
 }
@@ -115,6 +111,8 @@ class SignInNotifier extends StateNotifier<AsyncValue<void>> {
           password: password,
         );
       }
+      // Attendre un peu pour que l'état d'authentification se propage
+      await Future.delayed(const Duration(milliseconds: 500));
     });
   }
 }
