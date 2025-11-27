@@ -1,28 +1,51 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../mockTest/app_config.dart';
+import '../../../../mockTest/mock_auth_service.dart';
 import '../../../../models/user_model.dart';
 
 // Provider du service d'authentification
-final authServiceProvider = Provider<AuthService>((ref) {
+final authServiceProvider = Provider<dynamic>((ref) {
+  if (AppConfig.useMockData) {
+    return MockAuthService();
+  }
   return AuthService();
 });
 
-// Provider du stream d'état d'authentification Firebase
-final authStateProvider = StreamProvider<User?>((ref) {
+// Provider du stream d'état d'authentification
+final authStateProvider = StreamProvider<dynamic>((ref) {
   final authService = ref.watch(authServiceProvider);
-  return authService.authStateChanges;
+  if (AppConfig.useMockData) {
+    return (authService as MockAuthService).authStateChanges.map((user) {
+      print("AUTH STREAM (MOCK) = $user");
+      return user;
+    });
+  }
+  return (authService as AuthService).authStateChanges.map((user) {
+    print("AUTH STREAM (FIREBASE) = $user");
+    return user;
+  });
 });
 
 // Provider des données utilisateur actuelles
 final currentUserDataProvider = StreamProvider<UserModel?>((ref) {
   final authState = ref.watch(authStateProvider);
-  
+
   return authState.when(
     data: (user) {
       if (user == null) return Stream.value(null);
       final authService = ref.watch(authServiceProvider);
-      return authService.getUserDataStream(user.uid);
+
+      if (AppConfig.useMockData) {
+        final mockService = authService as MockAuthService;
+        final mockUser = user as MockUser;
+        return mockService.getUserDataStream(mockUser.uid);
+      } else {
+        final realService = authService as AuthService;
+        final firebaseUser = user as User;
+        return realService.getUserDataStream(firebaseUser.uid);
+      }
     },
     loading: () => Stream.value(null),
     error: (_, __) => Stream.value(null),
@@ -31,12 +54,12 @@ final currentUserDataProvider = StreamProvider<UserModel?>((ref) {
 
 // Provider pour l'inscription
 final signUpProvider =
-    StateNotifierProvider<SignUpNotifier, AsyncValue<void>>((ref) {
+StateNotifierProvider<SignUpNotifier, AsyncValue<void>>((ref) {
   return SignUpNotifier(ref.watch(authServiceProvider));
 });
 
 class SignUpNotifier extends StateNotifier<AsyncValue<void>> {
-  final AuthService _authService;
+  final dynamic _authService;
 
   SignUpNotifier(this._authService) : super(const AsyncValue.data(null));
 
@@ -47,23 +70,31 @@ class SignUpNotifier extends StateNotifier<AsyncValue<void>> {
   }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await _authService.signUp(
-        email: email,
-        password: password,
-        displayName: displayName,
-      );
+      if (AppConfig.useMockData) {
+        await (_authService as MockAuthService).signUp(
+          email: email,
+          password: password,
+          displayName: displayName,
+        );
+      } else {
+        await (_authService as AuthService).signUp(
+          email: email,
+          password: password,
+          displayName: displayName,
+        );
+      }
     });
   }
 }
 
 // Provider pour la connexion
 final signInProvider =
-    StateNotifierProvider<SignInNotifier, AsyncValue<void>>((ref) {
+StateNotifierProvider<SignInNotifier, AsyncValue<void>>((ref) {
   return SignInNotifier(ref.watch(authServiceProvider));
 });
 
 class SignInNotifier extends StateNotifier<AsyncValue<void>> {
-  final AuthService _authService;
+  final dynamic _authService;
 
   SignInNotifier(this._authService) : super(const AsyncValue.data(null));
 
@@ -73,10 +104,17 @@ class SignInNotifier extends StateNotifier<AsyncValue<void>> {
   }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await _authService.signIn(
-        email: email,
-        password: password,
-      );
+      if (AppConfig.useMockData) {
+        await (_authService as MockAuthService).signIn(
+          email: email,
+          password: password,
+        );
+      } else {
+        await (_authService as AuthService).signIn(
+          email: email,
+          password: password,
+        );
+      }
     });
   }
 }
@@ -84,5 +122,10 @@ class SignInNotifier extends StateNotifier<AsyncValue<void>> {
 // Provider pour la déconnexion
 final signOutProvider = Provider<Future<void> Function()>((ref) {
   final authService = ref.watch(authServiceProvider);
-  return () => authService.signOut();
+  return () {
+    if (AppConfig.useMockData) {
+      return (authService as MockAuthService).signOut();
+    }
+    return (authService as AuthService).signOut();
+  };
 });

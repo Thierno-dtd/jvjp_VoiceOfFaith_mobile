@@ -87,6 +87,8 @@ class HomeContent extends ConsumerWidget {
     final thoughtOfTheDay = ref.watch(thoughtOfTheDayProvider);
     final upcomingEvents = ref.watch(upcomingEventsProvider);
 
+
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
       body: SafeArea(

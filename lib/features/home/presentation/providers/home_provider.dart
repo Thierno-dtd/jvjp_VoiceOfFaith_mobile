@@ -5,10 +5,23 @@ import '../../../../models/verse_model.dart';
 import '../../../../models/audio_model.dart';
 import '../../../../models/event_model.dart';
 import '../../../../models/post_model.dart';
+import '../../../../mockTest/app_config.dart';
+import '../../../../mockTest/mock_firestore_service.dart';
+import '../../../../mockTest/mock_bible_api_service.dart';
 
 // Provider du service Bible
 final bibleApiServiceProvider = Provider<BibleApiService>((ref) {
+  if (AppConfig.useMockData) {
+    return MockBibleApiService() as BibleApiService;
+  }
   return BibleApiService();
+});
+
+final homeFirestoreServiceProvider = Provider<FirestoreService>((ref) {
+  if (AppConfig.useMockData) {
+    return MockFirestoreService();
+  }
+  return FirestoreService();
 });
 
 // Provider du verset du jour
@@ -19,7 +32,7 @@ final verseOfTheDayProvider = FutureProvider<VerseModel>((ref) async {
 
 // Provider du dernier audio
 final latestAudioProvider = StreamProvider<AudioModel?>((ref) {
-  final firestoreService = FirestoreService();
+  final firestoreService = ref.watch(homeFirestoreServiceProvider);
   return firestoreService.getAudios().map((audios) {
     return audios.isNotEmpty ? audios.first : null;
   });
@@ -27,13 +40,13 @@ final latestAudioProvider = StreamProvider<AudioModel?>((ref) {
 
 // Provider des événements à venir
 final upcomingEventsProvider = StreamProvider<List<EventModel>>((ref) {
-  final firestoreService = FirestoreService();
+  final firestoreService = ref.watch(homeFirestoreServiceProvider);
   return firestoreService.getUpcomingEvents();
 });
 
 // Provider de la pensée du jour
 final thoughtOfTheDayProvider = StreamProvider<PostModel?>((ref) {
-  final firestoreService = FirestoreService();
+  final firestoreService = ref.watch(homeFirestoreServiceProvider);
   return firestoreService.getPosts().map((posts) {
     // Filtrer pour obtenir la dernière pensée du jour
     final thoughts = posts.where((p) => p.category == PostCategory.pensee).toList();
@@ -43,6 +56,6 @@ final thoughtOfTheDayProvider = StreamProvider<PostModel?>((ref) {
 
 // Provider du statut LIVE
 final liveStatusProvider = StreamProvider<Map<String, dynamic>>((ref) {
-  final firestoreService = FirestoreService();
+  final firestoreService = ref.watch(homeFirestoreServiceProvider);
   return firestoreService.getAppSettings();
 });

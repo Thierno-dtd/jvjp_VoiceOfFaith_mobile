@@ -1,9 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/services/firestore_service.dart';
 import '../../../../models/event_model.dart';
+import '../../../../mockTest/app_config.dart';
+import '../../../../mockTest/mock_firestore_service.dart';
 
 // Provider du service Firestore
 final firestoreServiceProvider = Provider<FirestoreService>((ref) {
+  if (AppConfig.useMockData) {
+    return MockFirestoreService();
+  }
   return FirestoreService();
 });
 
