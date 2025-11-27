@@ -2,7 +2,6 @@ import '../models/user_model.dart';
 import 'mock_data.dart';
 import 'dart:async';
 
-
 /// Service mock pour simuler l'authentification Firebase
 class MockAuthService {
   UserModel? _currentUser;
@@ -15,7 +14,6 @@ class MockAuthService {
 
   Stream<MockUser?> get authStateChanges => _authStateController.stream;
 
-
   // Utilisateur actuel
   MockUser? get currentUser {
     if (_currentUser != null) {
@@ -24,12 +22,30 @@ class MockAuthService {
     return null;
   }
 
+  MockAuthService() {
+    // simuler un utilisateur connecté
+    _authStateController.add(MockUser(uid: "12345", email: "mock@test.com"));
+  }
+
+  Stream<UserModel?> getUserDataStream(String uid) {
+    return Stream.value(
+      UserModel(
+        uid: "12345",
+        email: "mock@test.com",
+        displayName: "Mock User",
+        role: UserRole.user,
+        createdAt: DateTime.now(),
+      ),
+    );
+  }
+
   // Inscription
   Future<UserModel> signUp({
     required String email,
     required String password,
     required String displayName,
   }) async {
+    print('🔵 Mock SignUp: Starting for $email');
     await Future.delayed(const Duration(seconds: 1));
 
     _currentUser = UserModel(
@@ -40,13 +56,14 @@ class MockAuthService {
       createdAt: DateTime.now(),
     );
 
+    print('🔵 Mock SignUp: User created - ${_currentUser!.uid}');
+
+    // Émettre le nouvel utilisateur dans le stream
     _authStateController.add(
-        _currentUser != null
-            ? MockUser(uid: _currentUser!.uid, email: _currentUser!.email)
-            : null
+        MockUser(uid: _currentUser!.uid, email: _currentUser!.email)
     );
 
-
+    print('🔵 Mock SignUp: Auth state updated');
     return _currentUser!;
   }
 
@@ -55,30 +72,35 @@ class MockAuthService {
     required String email,
     required String password,
   }) async {
+    print('🔵 Mock SignIn: Starting for $email');
     await Future.delayed(const Duration(seconds: 1));
 
     // Pour les tests, accepter n'importe quel email/mot de passe
     // et retourner l'utilisateur de test
     _currentUser = MockData.testUser;
+
+    print('🔵 Mock SignIn: User authenticated - ${_currentUser!.uid}');
+
+    // Émettre l'utilisateur dans le stream
     _authStateController.add(
-        _currentUser != null
-            ? MockUser(uid: _currentUser!.uid, email: _currentUser!.email)
-            : null
+        MockUser(uid: _currentUser!.uid, email: _currentUser!.email)
     );
 
+    print('🔵 Mock SignIn: Auth state updated');
     return _currentUser!;
   }
 
   // Déconnexion
   Future<void> signOut() async {
+    print('🔵 Mock SignOut: Starting');
     await Future.delayed(const Duration(milliseconds: 500));
-    _currentUser = null;
-    _authStateController.add(
-        _currentUser != null
-            ? MockUser(uid: _currentUser!.uid, email: _currentUser!.email)
-            : null
-    );
 
+    _currentUser = null;
+
+    // Émettre null dans le stream
+    _authStateController.add(null);
+
+    print('🔵 Mock SignOut: Auth state cleared');
   }
 
   // Récupérer les données utilisateur
@@ -88,10 +110,10 @@ class MockAuthService {
   }
 
   // Stream des données utilisateur
-  Stream<UserModel> getUserDataStream(String uid) async* {
+  /*Stream<UserModel> getUserDataStream(String uid) async* {
     await Future.delayed(const Duration(milliseconds: 300));
     yield _currentUser ?? MockData.testUser;
-  }
+  }*/
 
   // Mettre à jour le profil
   Future<void> updateProfile({
@@ -105,24 +127,21 @@ class MockAuthService {
         photoUrl: photoUrl,
       );
       _authStateController.add(
-          _currentUser != null
-              ? MockUser(uid: _currentUser!.uid, email: _currentUser!.email)
-              : null
+          MockUser(uid: _currentUser!.uid, email: _currentUser!.email)
       );
-
     }
   }
 
   // Mettre à jour le token FCM
   Future<void> updateFcmToken(String token) async {
     await Future.delayed(const Duration(milliseconds: 200));
-    print('Mock: Updated FCM token');
+    print('🔵 Mock: Updated FCM token');
   }
 
   // Réinitialisation du mot de passe
   Future<void> resetPassword(String email) async {
     await Future.delayed(const Duration(seconds: 1));
-    print('Mock: Password reset email sent to $email');
+    print('🔵 Mock: Password reset email sent to $email');
   }
 }
 
@@ -132,5 +151,4 @@ class MockUser {
   final String? email;
 
   MockUser({required this.uid, this.email});
-
 }
