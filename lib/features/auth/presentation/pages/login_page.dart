@@ -27,48 +27,49 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (!_formKey.currentState!.validate()) return;
 
     try {
+      print('🔵 LoginPage: Starting login process');
+
       await ref.read(signInProvider.notifier).signIn(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
+
+      print('🔵 LoginPage: SignIn completed');
+
+      // Afficher succès
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Connexion réussie !'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 1),
+          ),
+        );
+
+        // Forcer la navigation en revenant à la racine
+        // Cela va déclencher un rebuild de MyApp qui détectera l'utilisateur connecté
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
+
+      print('🔵 LoginPage: Navigation triggered');
+
     } catch (e) {
-      // L'erreur sera gérée par le listener
+      print('🔴 LoginPage: Login error - $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final signInState = ref.watch(signInProvider);
-
-    // Écouter les changements d'état de connexion
-    ref.listen<AsyncValue<void>>(signInProvider, (previous, state) {
-      state.whenOrNull(
-        data: (_) {
-          // Succès - afficher un message
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Connexion réussie !'),
-                backgroundColor: Colors.green,
-                duration: Duration(seconds: 2),
-              ),
-            );
-          }
-          // La navigation sera gérée automatiquement par app.dart via authStateProvider
-        },
-        error: (error, _) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(error.toString()),
-                backgroundColor: Colors.red,
-                duration: const Duration(seconds: 3),
-              ),
-            );
-          }
-        },
-      );
-    });
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -190,7 +191,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // TODO: Implement forgot password
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Forgot password feature coming soon'),

@@ -6,11 +6,21 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Stream de l'utilisateur actuel
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
+  // Stream de l'utilisateur actuel avec logs
+  Stream<User?> get authStateChanges {
+    print('🔵 AuthService: Initializing authStateChanges stream');
+    return _auth.authStateChanges().map((user) {
+      print('🔵 AuthService: authStateChanges emitted - User: ${user?.uid ?? "null"}');
+      return user;
+    });
+  }
 
   // Utilisateur actuel
-  User? get currentUser => _auth.currentUser;
+  User? get currentUser {
+    final user = _auth.currentUser;
+    print('🔵 AuthService: currentUser getter called - User: ${user?.uid ?? "null"}');
+    return user;
+  }
 
   // Inscription
   Future<UserModel> signUp({
@@ -19,10 +29,14 @@ class AuthService {
     required String displayName,
   }) async {
     try {
+      print('🔵 AuthService: signUp called for $email');
+
       final userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      print('🔵 AuthService: User created with Firebase Auth');
 
       final user = userCredential.user;
       if (user == null) {
@@ -31,13 +45,14 @@ class AuthService {
 
       // Mettre à jour le displayName
       await user.updateDisplayName(displayName);
+      print('🔵 AuthService: DisplayName updated');
 
       // Créer le document utilisateur dans Firestore
       final userModel = UserModel(
         uid: user.uid,
         email: email,
         displayName: displayName,
-        role: UserRole.user, // Rôle par défaut
+        role: UserRole.user,
         createdAt: DateTime.now(),
       );
 
@@ -46,9 +61,16 @@ class AuthService {
           .doc(user.uid)
           .set(userModel.toMap());
 
+      print('🔵 AuthService: User document created in Firestore');
+      print('🔵 AuthService: Current auth state - User: ${_auth.currentUser?.uid}');
+
       return userModel;
     } on FirebaseAuthException catch (e) {
+      print('🔴 AuthService: FirebaseAuthException - ${e.code}: ${e.message}');
       throw _handleAuthException(e);
+    } catch (e) {
+      print('🔴 AuthService: Unexpected error - $e');
+      rethrow;
     }
   }
 
@@ -58,46 +80,69 @@ class AuthService {
     required String password,
   }) async {
     try {
+      print('🔵 AuthService: signIn called for $email');
+
       final userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      print('🔵 AuthService: User signed in with Firebase Auth');
 
       final user = userCredential.user;
       if (user == null) {
         throw Exception('Erreur lors de la connexion');
       }
 
+      print('🔵 AuthService: User UID: ${user.uid}');
+      print('🔵 AuthService: Current auth state - User: ${_auth.currentUser?.uid}');
+
       // Récupérer les données utilisateur depuis Firestore
-      return await getUserData(user.uid);
+      final userData = await getUserData(user.uid);
+      print('🔵 AuthService: User data retrieved from Firestore');
+
+      return userData;
     } on FirebaseAuthException catch (e) {
+      print('🔴 AuthService: FirebaseAuthException - ${e.code}: ${e.message}');
       throw _handleAuthException(e);
+    } catch (e) {
+      print('🔴 AuthService: Unexpected error - $e');
+      rethrow;
     }
   }
 
   // Déconnexion
   Future<void> signOut() async {
+    print('🔵 AuthService: signOut called');
     await _auth.signOut();
+    print('🔵 AuthService: User signed out');
   }
 
   // Récupérer les données utilisateur
   Future<UserModel> getUserData(String uid) async {
+    print('🔵 AuthService: Getting user data for $uid');
     final doc = await _firestore.collection('users').doc(uid).get();
-    
+
     if (!doc.exists) {
+      print('🔴 AuthService: User document not found in Firestore');
       throw Exception('Utilisateur introuvable');
     }
 
+    print('🔵 AuthService: User data found in Firestore');
     return UserModel.fromMap(doc.data()!, uid);
   }
 
   // Stream des données utilisateur
   Stream<UserModel> getUserDataStream(String uid) {
+    print('🔵 AuthService: Setting up user data stream for $uid');
     return _firestore
         .collection('users')
         .doc(uid)
         .snapshots()
-        .map((doc) => UserModel.fromMap(doc.data()!, uid));
+        .map((doc) {
+      print('🔵 AuthService: User data stream emitted');
+      return UserModel.fromMap(doc.data()!, uid);
+    });
   }
 
   // Mettre à jour le profil

@@ -43,49 +43,49 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     }
 
     try {
+      print('🔵 RegisterPage: Starting signup process');
+
       await ref.read(signUpProvider.notifier).signUp(
         email: _emailController.text.trim(),
         password: _passwordController.text,
         displayName: _nameController.text.trim(),
       );
+
+      print('🔵 RegisterPage: SignUp completed');
+
+      // Afficher succès
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Compte créé avec succès !'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 1),
+          ),
+        );
+
+        // Forcer la navigation en revenant à la racine
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
+
+      print('🔵 RegisterPage: Navigation triggered');
+
     } catch (e) {
-      // L'erreur sera gérée par le listener
+      print('🔴 RegisterPage: Signup error - $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final signUpState = ref.watch(signUpProvider);
-
-    // Écouter les changements d'état d'inscription
-    ref.listen<AsyncValue<void>>(signUpProvider, (previous, state) {
-      state.whenOrNull(
-        data: (_) {
-          // Succès
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Compte créé avec succès !'),
-                backgroundColor: Colors.green,
-                duration: Duration(seconds: 2),
-              ),
-            );
-          }
-          // La navigation sera gérée automatiquement par app.dart
-        },
-        error: (error, _) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(error.toString()),
-                backgroundColor: Colors.red,
-                duration: const Duration(seconds: 3),
-              ),
-            );
-          }
-        },
-      );
-    });
 
     return Scaffold(
       backgroundColor: Colors.white,

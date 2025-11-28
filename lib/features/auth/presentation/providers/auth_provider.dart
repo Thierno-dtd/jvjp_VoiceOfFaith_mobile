@@ -64,6 +64,8 @@ class SignUpNotifier extends StateNotifier<AsyncValue<void>> {
   }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
+      print('🔵 SignUp: Starting for $email');
+
       if (AppConfig.useMockData) {
         await (_authService as MockAuthService).signUp(
           email: email,
@@ -77,8 +79,11 @@ class SignUpNotifier extends StateNotifier<AsyncValue<void>> {
           displayName: displayName,
         );
       }
-      // Attendre un peu pour que l'état d'authentification se propage
-      await Future.delayed(const Duration(milliseconds: 500));
+
+      print('🔵 SignUp: Success, waiting for auth state to propagate');
+      // Attendre que l'état d'auth se propage
+      await Future.delayed(const Duration(milliseconds: 1500));
+      print('🔵 SignUp: Complete');
     });
   }
 }
@@ -100,6 +105,8 @@ class SignInNotifier extends StateNotifier<AsyncValue<void>> {
   }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
+      print('🔵 SignIn: Starting for $email');
+
       if (AppConfig.useMockData) {
         await (_authService as MockAuthService).signIn(
           email: email,
@@ -111,8 +118,9 @@ class SignInNotifier extends StateNotifier<AsyncValue<void>> {
           password: password,
         );
       }
-      // Attendre un peu pour que l'état d'authentification se propage
-      await Future.delayed(const Duration(milliseconds: 500));
+
+      print('🔵 SignIn: Success - User authenticated');
+      // Ne pas attendre ici, Firebase Auth propagera automatiquement
     });
   }
 }
