@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart';
-import 'register_page.dart';
+import '../../../../core/navigation/app_router.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -17,25 +16,25 @@ class _OnboardingPageState extends State<OnboardingPage> {
     OnboardingContent(
       title: 'Join Our Family',
       description:
-          'Welcome! We\'re glad you\'re here. Create an account to get started or log in to connect with our community.',
+      'Welcome! We\'re glad you\'re here. Create an account to get started or log in to connect with our community.',
       icon: Icons.church,
     ),
     OnboardingContent(
       title: 'Stay Connected',
       description:
-          'Listen to sermons, watch live services, and stay up to date with church events and announcements.',
+      'Listen to sermons, watch live services, and stay up to date with church events and announcements.',
       icon: Icons.live_tv,
     ),
     OnboardingContent(
       title: 'Grow Together',
       description:
-          'Join our community, participate in events, and grow in your faith journey with fellow believers.',
+      'Join our community, participate in events, and grow in your faith journey with fellow believers.',
       icon: Icons.people,
     ),
     OnboardingContent(
       title: 'Give & Serve',
       description:
-          'Support our mission through giving, volunteering, and serving others in our community.',
+      'Support our mission through giving, volunteering, and serving others in our community.',
       icon: Icons.volunteer_activism,
     ),
   ];
@@ -46,20 +45,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
     super.dispose();
   }
 
-  void _nextPage() {
-    if (_currentPage < _pages.length - 1) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
   void _skipToEnd() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
-    );
+    AppRouter.navigateReplaceTo(context, AppRoutes.login);
   }
 
   @override
@@ -108,7 +95,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
                   _pages.length,
-                  (index) => _buildDot(index == _currentPage),
+                      (index) => _buildDot(index == _currentPage),
                 ),
               ),
             ),
@@ -124,11 +111,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     height: 56,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pushReplacement(
+                        AppRouter.navigateReplaceTo(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const RegisterPage(),
-                          ),
+                          AppRoutes.register,
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -163,11 +148,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushReplacement(
+                          AppRouter.navigateReplaceTo(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => const LoginPage(),
-                            ),
+                            AppRoutes.login,
                           );
                         },
                         child: const Text(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../../core/navigation/app_router.dart';
+
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -16,7 +18,16 @@ class ProfilePage extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () => signOut(),
+            onPressed:  () async {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Déconnexion réussie, Soon!!'),
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 1),
+                ),
+              );
+              await signOut();
+            },
           ),
         ],
       ),

@@ -9,6 +9,7 @@ import '../../../audios/presentation/pages/audios_list_page.dart';
 import '../../../events/presentation/pages/events_page.dart';
 import '../../../posts/presentation/pages/social_feed_page.dart';
 import '../../../profile/presentation/pages/profile_page.dart';
+import '../../../../core/navigation/app_router.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});

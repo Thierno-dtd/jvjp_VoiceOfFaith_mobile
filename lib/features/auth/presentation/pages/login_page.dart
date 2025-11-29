@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
-import 'register_page.dart';
+import '../../../../core/navigation/app_router.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -46,12 +46,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           ),
         );
 
-        // Forcer la navigation en revenant à la racine
-        // Cela va déclencher un rebuild de MyApp qui détectera l'utilisateur connecté
-        Navigator.of(context).popUntil((route) => route.isFirst);
+        // La navigation sera gérée automatiquement par le listener dans MyApp
+        // Pas besoin de naviguer manuellement ici
       }
 
-      print('🔵 LoginPage: Navigation triggered');
+      print('🔵 LoginPage: Navigation will be handled by MyApp listener');
 
     } catch (e) {
       print('🔴 LoginPage: Login error - $e');
@@ -312,11 +311,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushReplacement(
+                        AppRouter.navigateReplaceTo(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const RegisterPage(),
-                          ),
+                          AppRoutes.register,
                         );
                       },
                       child: const Text(

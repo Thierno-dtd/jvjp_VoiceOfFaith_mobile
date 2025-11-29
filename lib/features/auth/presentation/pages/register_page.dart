@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 import 'login_page.dart';
+import '../../../../core/navigation/app_router.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -63,11 +64,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           ),
         );
 
-        // Forcer la navigation en revenant à la racine
-        Navigator.of(context).popUntil((route) => route.isFirst);
+        // La navigation sera gérée automatiquement par le listener dans MyApp
       }
 
-      print('🔵 RegisterPage: Navigation triggered');
+      print('🔵 RegisterPage: Navigation will be handled by MyApp listener');
 
     } catch (e) {
       print('🔴 RegisterPage: Signup error - $e');
@@ -82,6 +82,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -468,11 +469,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushReplacement(
+                        AppRouter.navigateReplaceTo(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginPage(),
-                          ),
+                          AppRoutes.login,
                         );
                       },
                       child: const Text(
