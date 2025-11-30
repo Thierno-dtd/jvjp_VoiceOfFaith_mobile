@@ -15,6 +15,13 @@ class SermonsPage extends ConsumerStatefulWidget {
 class _SermonsPageState extends ConsumerState<SermonsPage> {
   String selectedYear = '2024';
   String selectedMonth = 'June';
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   final List<String> years = ['2024', '2023', '2022'];
   final List<String> months = [
@@ -25,6 +32,8 @@ class _SermonsPageState extends ConsumerState<SermonsPage> {
   @override
   Widget build(BuildContext context) {
     final sermons = ref.watch(sermonsProvider);
+    //final sermons = ref.watch(filteredSermonsProvider);
+
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -55,6 +64,33 @@ class _SermonsPageState extends ConsumerState<SermonsPage> {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (value) {
+                ref.read(sermonSearchProvider.notifier).state = value;
+              },
+              decoration: InputDecoration(
+                hintText: 'Search messages...',
+                hintStyle: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: 15,
+                ),
+                prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+              ),
+            ),
+          ),
           // Filters
           Padding(
             padding: const EdgeInsets.all(16.0),

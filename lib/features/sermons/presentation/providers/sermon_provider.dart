@@ -23,3 +23,26 @@ final sermonDetailProvider = FutureProvider.family<SermonModel, String>((ref, id
   final firestoreService = ref.watch(firestoreServiceProvider);
   return await firestoreService.getSermon(id);
 });
+
+final sermonSearchProvider = StateProvider<String>((ref) => "");
+
+final filteredSermonsProvider = Provider<List<SermonModel>>((ref) {
+  final search = ref.watch(sermonSearchProvider).toLowerCase();
+  final asyncSermons = ref.watch(sermonsProvider);
+
+  return asyncSermons.when(
+    data: (sermons) {
+      if (search.isEmpty) return sermons;
+
+      return sermons.where((sermon) {
+        final title = sermon.title.toLowerCase();
+        //final description = sermon.description.toLowerCase();
+        //return title.contains(search) || description.contains(search);
+        return title.contains(search);
+
+      }).toList();
+    },
+    loading: () => [],
+    error: (_, __) => [],
+  );
+});
