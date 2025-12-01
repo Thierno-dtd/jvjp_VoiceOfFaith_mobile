@@ -19,7 +19,7 @@ class EventDetailPage extends ConsumerWidget {
     final selectedTab = ref.watch(selectedEventTabProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F6FA),
       body: CustomScrollView(
         slivers: [
           // Header with image

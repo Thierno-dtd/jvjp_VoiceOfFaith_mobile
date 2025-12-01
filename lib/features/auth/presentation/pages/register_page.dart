@@ -89,7 +89,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final signUpState = ref.watch(signUpProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F6FA),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,

@@ -71,7 +71,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final signInState = ref.watch(signInProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F6FA),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),

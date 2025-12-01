@@ -13,6 +13,7 @@ class ProfilePage extends ConsumerWidget {
     final signOut = ref.read(signOutProvider);
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F6FA),
       appBar: AppBar(
         title: const Text('Profile'),
         actions: [

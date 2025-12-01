@@ -26,7 +26,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     const SermonsPage(),
     const AudiosListPage(),
     const EventsPage(),
-    const ProfilePage(),
+    const SocialFeedPage(), // Remplace ProfilePage
   ];
 
   @override
@@ -66,9 +66,9 @@ class _HomePageState extends ConsumerState<HomePage> {
             label: 'Events',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.grid_view_outlined),
+            activeIcon: Icon(Icons.grid_view),
+            label: 'Multimedia', // Changé de Profile à Multimedia
           ),
         ],
       ),
@@ -88,14 +88,12 @@ class HomeContent extends ConsumerWidget {
     final thoughtOfTheDay = ref.watch(thoughtOfTheDayProvider);
     final upcomingEvents = ref.watch(upcomingEventsProvider);
 
-
-
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // Header
+            // Header personnalisé avec le message "Bonjour"
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -136,30 +134,44 @@ class HomeContent extends ConsumerWidget {
                     IconButton(
                       icon: const Icon(Icons.notifications_outlined),
                       onPressed: () {
-                        // TODO: Navigate to notifications
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Notifications - À implémenter'),
+                          ),
+                        );
                       },
                     ),
 
-                    // Avatar
-                    currentUser.when(
-                      data: (user) => CircleAvatar(
-                        radius: 20,
-                        backgroundColor: const Color(0xFF8B9D83),
-                        backgroundImage: user?.photoUrl != null
-                            ? NetworkImage(user!.photoUrl!)
-                            : null,
-                        child: user?.photoUrl == null
-                            ? Text(
-                                user?.displayName[0].toUpperCase() ?? 'G',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )
-                            : null,
+                    // Avatar - Cliquable pour aller au profil
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ProfilePage(),
+                          ),
+                        );
+                      },
+                      child: currentUser.when(
+                        data: (user) => CircleAvatar(
+                          radius: 20,
+                          backgroundColor: const Color(0xFF8B9D83),
+                          backgroundImage: user?.photoUrl != null
+                              ? NetworkImage(user!.photoUrl!)
+                              : null,
+                          child: user?.photoUrl == null
+                              ? Text(
+                            user?.displayName[0].toUpperCase() ?? 'G',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                              : null,
+                        ),
+                        loading: () => const CircleAvatar(radius: 20),
+                        error: (_, __) => const CircleAvatar(radius: 20),
                       ),
-                      loading: () => const CircleAvatar(radius: 20),
-                      error: (_, __) => const CircleAvatar(radius: 20),
                     ),
                   ],
                 ),
@@ -322,7 +334,6 @@ class HomeContent extends ConsumerWidget {
                       const SizedBox(height: 20),
                       ElevatedButton.icon(
                         onPressed: () {
-                          // TODO: Set reminder
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Rappel configuré !'),
@@ -361,11 +372,6 @@ class HomeContent extends ConsumerWidget {
                     decoration: BoxDecoration(
                       color: const Color(0xFF8B7355),
                       borderRadius: BorderRadius.circular(16),
-                      image: DecorationImage(
-                        image: const AssetImage('assets/images/verse_bg.png'),
-                        fit: BoxFit.cover,
-                        opacity: 0.3,
-                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -400,9 +406,7 @@ class HomeContent extends ConsumerWidget {
                               ),
                             ),
                             TextButton(
-                              onPressed: () {
-                                // TODO: Show full verse
-                              },
+                              onPressed: () {},
                               style: TextButton.styleFrom(
                                 backgroundColor: Colors.white.withOpacity(0.2),
                                 padding: const EdgeInsets.symmetric(
@@ -624,7 +628,7 @@ class HomeContent extends ConsumerWidget {
                 }
                 return SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (context, index) {
+                        (context, index) {
                       final event = events[index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(

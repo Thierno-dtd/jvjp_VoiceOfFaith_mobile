@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../providers/audio_provider.dart';
 import '../../../../models/audio_model.dart';
 import 'audio_player_page.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 class AudiosListPage extends ConsumerStatefulWidget {
   const AudiosListPage({super.key});
@@ -30,25 +31,7 @@ class _AudiosListPageState extends ConsumerState<AudiosListPage> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Color(0xFF2D3142)),
-          onPressed: () {
-            // TODO: Open drawer
-          },
-        ),
-        title: const Text(
-          'Messages',
-          style: TextStyle(
-            color: Color(0xFF2D3142),
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        centerTitle: true,
-      ),
+      appBar: const CustomAppBar(title: 'Audio'),
       body: Column(
         children: [
           // Search bar

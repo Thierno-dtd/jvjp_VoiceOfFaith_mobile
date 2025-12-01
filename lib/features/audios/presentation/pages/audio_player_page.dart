@@ -113,7 +113,7 @@ class _AudioPlayerPageState extends ConsumerState<AudioPlayerPage> {
     final playerNotifier = ref.read(audioPlayerNotifierProvider.notifier);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F6FA),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,

@@ -93,7 +93,7 @@ class _SermonDetailPageState extends ConsumerState<SermonDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F6FA),
       body: CustomScrollView(
         slivers: [
           // Image Header with back button
