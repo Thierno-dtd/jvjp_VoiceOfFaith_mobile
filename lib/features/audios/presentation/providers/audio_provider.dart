@@ -5,23 +5,22 @@ import '../../../../models/audio_model.dart';
 import '../../../../mockTest/app_config.dart';
 import '../../../../mockTest/mock_firestore_service.dart';
 
-// Provider du service Firestore
-final firestoreServiceProvider = Provider<FirestoreService>((ref) {
-  if (AppConfig.useMockData) {
-    return MockFirestoreService(); // Service Mock
-  }
+final audioFirestoreServiceProvider = Provider<FirestoreService>((ref) {
+  /*if (AppConfig.useMockData) {
+    return MockFirestoreService();
+  }*/
   return FirestoreService();
 });
 
 // Provider de la liste des audios
 final audiosProvider = StreamProvider<List<AudioModel>>((ref) {
-  final firestoreService = ref.watch(firestoreServiceProvider);
+  final firestoreService = ref.watch(audioFirestoreServiceProvider);
   return firestoreService.getAudios();
 });
 
 // Provider pour un audio spécifique
 final audioDetailProvider = FutureProvider.family<AudioModel, String>((ref, id) async {
-  final firestoreService = ref.watch(firestoreServiceProvider);
+  final firestoreService = ref.watch(audioFirestoreServiceProvider);
   return await firestoreService.getAudio(id);
 });
 
@@ -92,7 +91,7 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
   Future<void> playAudio(AudioModel audio) async {
     await _audioPlayer.play(UrlSource(audio.audioUrl));
     state = state.copyWith(currentAudio: audio);
-    
+
     // Incrémenter le compteur de lectures
     await _firestoreService.incrementAudioPlays(audio.id);
   }
@@ -127,9 +126,9 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
 
 // Provider pour le notifier
 final audioPlayerNotifierProvider =
-    StateNotifierProvider<AudioPlayerNotifier, AudioPlayerState>((ref) {
+StateNotifierProvider<AudioPlayerNotifier, AudioPlayerState>((ref) {
   final audioPlayer = ref.watch(audioPlayerProvider);
-  final firestoreService = ref.watch(firestoreServiceProvider);
+  final firestoreService = ref.watch(audioFirestoreServiceProvider);
   return AudioPlayerNotifier(audioPlayer, firestoreService);
 });
 

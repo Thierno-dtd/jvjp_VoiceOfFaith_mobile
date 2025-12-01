@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../../core/navigation/app_router.dart';
 
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
@@ -63,7 +64,6 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
             IconButton(
               icon: const Icon(Icons.notifications_outlined),
               onPressed: () {
-                // TODO: Navigate to notifications
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Notifications - À implémenter'),
@@ -72,11 +72,10 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
               },
             ),
 
-            // Avatar (profile button)
+            // Avatar (profile button) - CORRECTION ICI
             GestureDetector(
               onTap: () {
-                // Navigate to profile when tapping avatar
-                Navigator.pushNamed(context, '/profile');
+                AppRouter.navigateTo(context, AppRoutes.profile);
               },
               child: currentUser.when(
                 data: (user) => CircleAvatar(

@@ -4,29 +4,28 @@ import '../../../../models/event_model.dart';
 import '../../../../mockTest/app_config.dart';
 import '../../../../mockTest/mock_firestore_service.dart';
 
-// Provider du service Firestore
-final firestoreServiceProvider = Provider<FirestoreService>((ref) {
-  if (AppConfig.useMockData) {
+final eventFirestoreServiceProvider = Provider<FirestoreService>((ref) {
+  /*if (AppConfig.useMockData) {
     return MockFirestoreService();
-  }
+  }*/
   return FirestoreService();
 });
 
 // Provider de tous les événements
 final allEventsProvider = StreamProvider<List<EventModel>>((ref) {
-  final firestoreService = ref.watch(firestoreServiceProvider);
+  final firestoreService = ref.watch(eventFirestoreServiceProvider);
   return firestoreService.getEvents();
 });
 
 // Provider des événements à venir
 final upcomingEventsProvider = StreamProvider<List<EventModel>>((ref) {
-  final firestoreService = ref.watch(firestoreServiceProvider);
+  final firestoreService = ref.watch(eventFirestoreServiceProvider);
   return firestoreService.getUpcomingEvents();
 });
 
 // Provider pour un événement spécifique
 final eventDetailProvider = FutureProvider.family<EventModel, String>((ref, id) async {
-  final firestoreService = ref.watch(firestoreServiceProvider);
+  final firestoreService = ref.watch(eventFirestoreServiceProvider);
   return await firestoreService.getEvent(id);
 });
 

@@ -6,8 +6,8 @@ import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/audios/presentation/pages/audios_list_page.dart';
 import '../../features/sermons/presentation/pages/sermons_page.dart';
 import '../../features/events/presentation/pages/events_page.dart';
+import '../../features/profile/presentation/pages/profile_page.dart';
 
-/// Routes de l'application
 class AppRoutes {
   static const String splash = '/';
   static const String onboarding = '/onboarding';
@@ -17,9 +17,9 @@ class AppRoutes {
   static const String audios = '/audios';
   static const String sermons = '/sermons';
   static const String events = '/events';
+  static const String profile = '/profile';
 }
 
-/// Configuration des routes de l'application
 class AppRouter {
   static Map<String, WidgetBuilder> get routes => {
     AppRoutes.splash: (context) => const SplashPage(),
@@ -30,6 +30,7 @@ class AppRouter {
     AppRoutes.audios: (context) => const AudiosListPage(),
     AppRoutes.sermons: (context) => const SermonsPage(),
     AppRoutes.events: (context) => const EventsPage(),
+    AppRoutes.profile: (context) => const ProfilePage(),
   };
 
   /// Navigation vers une route en supprimant toutes les routes précédentes

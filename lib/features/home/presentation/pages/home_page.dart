@@ -8,7 +8,6 @@ import '../../../sermons/presentation/pages/sermons_page.dart';
 import '../../../audios/presentation/pages/audios_list_page.dart';
 import '../../../events/presentation/pages/events_page.dart';
 import '../../../posts/presentation/pages/social_feed_page.dart';
-import '../../../profile/presentation/pages/profile_page.dart';
 import '../../../../core/navigation/app_router.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -26,7 +25,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     const SermonsPage(),
     const AudiosListPage(),
     const EventsPage(),
-    const SocialFeedPage(), // Remplace ProfilePage
+    const SocialFeedPage(),
   ];
 
   @override
@@ -68,7 +67,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.grid_view_outlined),
             activeIcon: Icon(Icons.grid_view),
-            label: 'Multimedia', // Changé de Profile à Multimedia
+            label: 'Multimedia',
           ),
         ],
       ),
@@ -142,15 +141,11 @@ class HomeContent extends ConsumerWidget {
                       },
                     ),
 
-                    // Avatar - Cliquable pour aller au profil
+                    // Avatar - CORRECTION ICI
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ProfilePage(),
-                          ),
-                        );
+                        // Utiliser la navigation nommée
+                        AppRouter.navigateTo(context, AppRoutes.profile);
                       },
                       child: currentUser.when(
                         data: (user) => CircleAvatar(

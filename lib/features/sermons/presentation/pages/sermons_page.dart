@@ -32,15 +32,16 @@ class _SermonsPageState extends ConsumerState<SermonsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final sermons = ref.watch(sermonsProvider);
-    //final sermons = ref.watch(filteredSermonsProvider);
-
+    // Utiliser le provider filtré au lieu du provider brut
+    final sermonsAsync = ref.watch(sermonsProvider);
+    final searchQuery = ref.watch(sermonSearchProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
-        appBar: const CustomAppBar(title: 'Sermons'),
+      appBar: const CustomAppBar(title: 'Sermons'),
       body: Column(
         children: [
+          // Barre de recherche
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
@@ -49,7 +50,7 @@ class _SermonsPageState extends ConsumerState<SermonsPage> {
                 ref.read(sermonSearchProvider.notifier).state = value;
               },
               decoration: InputDecoration(
-                hintText: 'Search messages...',
+                hintText: 'Search sermons...',
                 hintStyle: TextStyle(
                   color: Colors.grey[400],
                   fontSize: 15,
@@ -68,9 +69,10 @@ class _SermonsPageState extends ConsumerState<SermonsPage> {
               ),
             ),
           ),
-          // Filters
+
+          // Filtres année et mois
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
               children: [
                 // Year dropdown
@@ -133,13 +135,47 @@ class _SermonsPageState extends ConsumerState<SermonsPage> {
             ),
           ),
 
+          const SizedBox(height: 16),
+
           // Sermons Grid
           Expanded(
-            child: sermons.when(
+            child: sermonsAsync.when(
               data: (sermonsList) {
-                if (sermonsList.isEmpty) {
-                  return const Center(
-                    child: Text('Aucun sermon disponible'),
+                // Appliquer le filtre de recherche localement
+                var filteredSermons = sermonsList;
+                if (searchQuery.isNotEmpty) {
+                  filteredSermons = sermonsList
+                      .where((sermon) =>
+                      sermon.title
+                          .toLowerCase()
+                          .contains(searchQuery.toLowerCase()))
+                      .toList();
+                }
+
+                if (filteredSermons.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          searchQuery.isNotEmpty
+                              ? Icons.search_off
+                              : Icons.library_books_outlined,
+                          size: 64,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          searchQuery.isNotEmpty
+                              ? 'Aucun sermon trouvé'
+                              : 'Aucun sermon disponible',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 }
 
@@ -151,9 +187,9 @@ class _SermonsPageState extends ConsumerState<SermonsPage> {
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
                   ),
-                  itemCount: sermonsList.length,
+                  itemCount: filteredSermons.length,
                   itemBuilder: (context, index) {
-                    final sermon = sermonsList[index];
+                    final sermon = filteredSermons[index];
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -266,7 +302,18 @@ class _SermonsPageState extends ConsumerState<SermonsPage> {
               },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Center(
-                child: Text('Erreur: $error'),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.red,
+                    ),
+                    const SizedBox(height: 16),
+                    Text('Erreur: $error'),
+                  ],
+                ),
               ),
             ),
           ),
