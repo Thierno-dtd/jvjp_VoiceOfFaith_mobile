@@ -8,6 +8,7 @@ import '../../../sermons/presentation/pages/sermons_page.dart';
 import '../../../audios/presentation/pages/audios_list_page.dart';
 import '../../../events/presentation/pages/events_page.dart';
 import '../../../posts/presentation/pages/social_feed_page.dart';
+import '../../../donations/presentation/pages/donation_page.dart';
 import '../../../../core/navigation/app_router.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -26,6 +27,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     const AudiosListPage(),
     const EventsPage(),
     const SocialFeedPage(),
+    const DonationPage(),
   ];
 
   @override
@@ -67,7 +69,12 @@ class _HomePageState extends ConsumerState<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.grid_view_outlined),
             activeIcon: Icon(Icons.grid_view),
-            label: 'Multimedia',
+            label: 'Social',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.volunteer_activism_outlined),
+            activeIcon: Icon(Icons.volunteer_activism),
+            label: 'Donation',
           ),
         ],
       ),
