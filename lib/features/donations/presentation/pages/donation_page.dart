@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../providers/donation_provider.dart';
+import '../../../../models/donation_model.dart';
 
 class DonationPage extends ConsumerStatefulWidget {
   const DonationPage({super.key});
@@ -24,8 +26,10 @@ class _DonationPageState extends ConsumerState<DonationPage> {
   final List<int> _quickAmounts = [25, 50, 100, 250];
   final List<String> _frequencies = ['Ponctuel', 'Mensuel'];
   final List<Map<String, dynamic>> _paymentMethods = [
-    {'name': 'Carte de crédit', 'icon': Icons.credit_card},
-    {'name': 'PayPal', 'icon': Icons.payment},
+    {'name': 'Carte de crédit', 'icon': Icons.credit_card, 'desc': 'Visa, Mastercard, etc.'},
+    {'name': 'PayPal', 'icon': Icons.payment, 'desc': 'Paiement sécurisé PayPal'},
+    {'name': 'T-Money', 'icon': Icons.phone_android, 'desc': 'Mobile Money Togo', 'color': Color(0xFFE53935)},
+    {'name': 'Flooz', 'icon': Icons.phone_android, 'desc': 'Mobile Money Moov Africa', 'color': Color(0xFF00BCD4)},
   ];
 
   @override
@@ -37,20 +41,79 @@ class _DonationPageState extends ConsumerState<DonationPage> {
   Future<void> _processDonation() async {
     if (!_formKey.currentState!.validate()) return;
 
+    // Vérifier qu'un montant est sélectionné
+    final amount = _customAmount.isNotEmpty
+        ? double.tryParse(_customAmount)
+        : _selectedAmount.toDouble();
+
+    if (amount == null || amount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Veuillez sélectionner un montant valide'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isProcessing = true;
     });
 
-    // Simuler le traitement du paiement
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      // Déterminer le type de don
+      final donationType = _selectedFrequency == 'Mensuel'
+          ? DonationType.monthly
+          : DonationType.oneTime;
 
-    if (mounted) {
-      setState(() {
-        _isProcessing = false;
-      });
+      // Déterminer la méthode de paiement
+      PaymentMethod paymentMethod;
+      switch (_selectedPaymentMethod) {
+        case 'PayPal':
+          paymentMethod = PaymentMethod.paypal;
+          break;
+        case 'T-Money':
+          paymentMethod = PaymentMethod.tmoney;
+          break;
+        case 'Flooz':
+          paymentMethod = PaymentMethod.flooz;
+          break;
+        default:
+          paymentMethod = PaymentMethod.creditCard;
+      }
 
-      // Afficher le dialogue de confirmation
-      _showSuccessDialog();
+      // Soumettre la donation via le provider
+      await ref.read(submitDonationProvider.notifier).submitDonation(
+        amount: amount,
+        type: donationType,
+        paymentMethod: paymentMethod,
+        message: _messageController.text.trim().isEmpty
+            ? null
+            : _messageController.text.trim(),
+        isAnonymous: _isAnonymous,
+      );
+
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+        });
+
+        // Afficher le dialogue de confirmation
+        _showSuccessDialog();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -102,7 +165,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  Navigator.pop(context);
+                  //Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2E4FE8),
@@ -365,6 +428,8 @@ class _DonationPageState extends ConsumerState<DonationPage> {
 
                 ..._paymentMethods.map((method) {
                   final isSelected = _selectedPaymentMethod == method['name'];
+                  final Color iconColor = method['color'] ?? const Color(0xFF2E4FE8);
+
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: GestureDetector(
@@ -380,7 +445,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: isSelected
-                                ? const Color(0xFF2E4FE8)
+                                ? iconColor
                                 : Colors.grey[300]!,
                             width: 2,
                           ),
@@ -391,29 +456,44 @@ class _DonationPageState extends ConsumerState<DonationPage> {
                               width: 48,
                               height: 48,
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF5F6FA),
+                                color: iconColor.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
                                 method['icon'],
-                                color: const Color(0xFF2E4FE8),
+                                color: iconColor,
                               ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
-                              child: Text(
-                                method['name'],
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF2D3142),
-                                ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    method['name'],
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF2D3142),
+                                    ),
+                                  ),
+                                  if (method['desc'] != null) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      method['desc'],
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ],
+                                ],
                               ),
                             ),
                             if (isSelected)
-                              const Icon(
+                              Icon(
                                 Icons.check_circle,
-                                color: Color(0xFF2E4FE8),
+                                color: iconColor,
                               ),
                           ],
                         ),
@@ -543,6 +623,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
 
                 // Comment votre don aide
                 Container(
+                  width: double.infinity,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -566,12 +647,14 @@ class _DonationPageState extends ConsumerState<DonationPage> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Text(
-                            'Comment votre don aide',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF2D3142),
+                          const Expanded(
+                            child: Text(
+                              'Comment votre don aide',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2D3142),
+                              ),
                             ),
                           ),
                         ],

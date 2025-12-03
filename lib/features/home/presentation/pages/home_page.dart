@@ -44,7 +44,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         type: BottomNavigationBarType.fixed,
         selectedItemColor: const Color(0xFF2E4FE8),
         unselectedItemColor: Colors.grey,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),

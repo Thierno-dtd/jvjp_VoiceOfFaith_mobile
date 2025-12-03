@@ -3,6 +3,8 @@ import '../../models/audio_model.dart';
 import '../../models/sermon_model.dart';
 import '../../models/post_model.dart';
 import '../../models/event_model.dart';
+import '../../models/donation_model.dart';
+
 
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -232,4 +234,40 @@ class FirestoreService {
       if (title != null) 'liveTitle': title,
     });
   }
+
+  // ============ DONATIONS ============
+
+  // Créer une donation
+  Future<String> createDonation(DonationModel donation) async {
+    final docRef = await _firestore.collection('donations').add(donation.toMap());
+    return docRef.id;
+  }
+
+  // Récupérer les donations d'un utilisateur
+  Stream<List<DonationModel>> getUserDonations(String userId) {
+    return _firestore
+        .collection('donations')
+        .where('userId', isEqualTo: userId)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+          .map((doc) => DonationModel.fromMap(doc.data(), doc.id))
+          .toList(),
+    );
+  }
+
+  // (Optionnel) Récupérer toutes les donations — utile pour dashboard admin
+  Stream<List<DonationModel>> getAllDonations() {
+    return _firestore
+        .collection('donations')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+          .map((doc) => DonationModel.fromMap(doc.data(), doc.id))
+          .toList(),
+    );
+  }
+
 }

@@ -17,7 +17,8 @@ enum DonationType {
 enum PaymentMethod {
   creditCard,
   paypal,
-  mobileMoney;
+  tmoney,
+  flooz;
 
   String get displayName {
     switch (this) {
@@ -25,8 +26,23 @@ enum PaymentMethod {
         return 'Carte de crédit';
       case PaymentMethod.paypal:
         return 'PayPal';
-      case PaymentMethod.mobileMoney:
-        return 'Mobile Money';
+      case PaymentMethod.tmoney:
+        return 'T-Money';
+      case PaymentMethod.flooz:
+        return 'Flooz';
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case PaymentMethod.creditCard:
+        return 'Visa, Mastercard, etc.';
+      case PaymentMethod.paypal:
+        return 'Paiement sécurisé PayPal';
+      case PaymentMethod.tmoney:
+        return 'Mobile Money Togo';
+      case PaymentMethod.flooz:
+        return 'Mobile Money Moov Africa';
     }
   }
 }

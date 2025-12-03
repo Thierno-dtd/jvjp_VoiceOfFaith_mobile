@@ -1,3 +1,5 @@
+import 'package:voice_of_faith/models/donation_model.dart';
+
 import '../models/audio_model.dart';
 import '../models/sermon_model.dart';
 import '../models/post_model.dart';
@@ -202,5 +204,23 @@ class MockFirestoreService implements FirestoreService {
   }) async {
     await Future.delayed(const Duration(milliseconds: 300));
     print('Mock: Updated live status - isLive: $isLive');
+  }
+
+  @override
+  Future<String> createDonation(DonationModel donation) {
+    // TODO: implement createDonation
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<List<DonationModel>> getAllDonations() {
+    // TODO: implement getAllDonations
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<List<DonationModel>> getUserDonations(String userId) {
+    // TODO: implement getUserDonations
+    throw UnimplementedError();
   }
 }
