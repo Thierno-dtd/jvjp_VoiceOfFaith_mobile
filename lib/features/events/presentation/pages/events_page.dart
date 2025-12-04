@@ -16,7 +16,7 @@ class EventsPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
-      appBar: const CustomAppBar(title: 'Sermons'),
+      appBar: const CustomAppBar(title: 'Evenements'),
       body: allEvents.when(
         data: (events) {
           if (events.isEmpty) {

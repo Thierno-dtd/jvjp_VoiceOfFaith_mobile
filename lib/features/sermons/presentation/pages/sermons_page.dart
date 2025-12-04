@@ -80,7 +80,7 @@ class _SermonsPageState extends ConsumerState<SermonsPage> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF5F6FA),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: DropdownButton<String>(
@@ -109,7 +109,7 @@ class _SermonsPageState extends ConsumerState<SermonsPage> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF5F6FA),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: DropdownButton<String>(

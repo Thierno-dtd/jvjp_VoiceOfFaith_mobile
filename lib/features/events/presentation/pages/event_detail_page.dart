@@ -528,6 +528,7 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
     return Container(
       color: Colors.white,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             height: 1,

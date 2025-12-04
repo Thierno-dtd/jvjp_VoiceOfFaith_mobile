@@ -9,8 +9,7 @@ import '../../../../models/sermon_model.dart';
 import '../../../../core/services/storage_service.dart';
 import '../../../../core/services/firestore_service.dart';
 import 'package:open_filex/open_filex.dart';
-//import 'package:flutter_pdfview/flutter_pdfview.dart';
-//import 'dart:io';
+
 
 class SermonDetailPage extends ConsumerStatefulWidget {
   final SermonModel sermon;
@@ -182,7 +181,7 @@ class _SermonDetailPageState extends ConsumerState<SermonDetailPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Pastor John Doe',
+                              'Pastor kodjovi gaston ANANI',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
