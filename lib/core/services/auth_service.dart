@@ -52,6 +52,7 @@ class AuthService {
         uid: user.uid,
         email: email,
         displayName: displayName,
+        emailVerified: false,
         role: UserRole.user,
         createdAt: DateTime.now(),
       );

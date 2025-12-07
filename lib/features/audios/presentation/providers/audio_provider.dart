@@ -2,13 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../../../../core/services/firestore_service.dart';
 import '../../../../models/audio_model.dart';
-import '../../../../mockTest/app_config.dart';
-import '../../../../mockTest/mock_firestore_service.dart';
 
 final audioFirestoreServiceProvider = Provider<FirestoreService>((ref) {
-  /*if (AppConfig.useMockData) {
-    return MockFirestoreService();
-  }*/
   return FirestoreService();
 });
 

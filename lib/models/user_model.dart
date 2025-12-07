@@ -24,19 +24,23 @@ class UserModel {
   final String uid;
   final String email;
   final String displayName;
+  final bool emailVerified;
   final UserRole role;
   final String? photoUrl;
   final String? fcmToken;
   final DateTime createdAt;
+  final DateTime? emailVerifiedAt;
 
   UserModel({
     required this.uid,
     required this.email,
     required this.displayName,
     required this.role,
+    required this.emailVerified,
     this.photoUrl,
     this.fcmToken,
     required this.createdAt,
+    this.emailVerifiedAt,
   });
 
   // From Firestore
@@ -49,9 +53,11 @@ class UserModel {
         (e) => e.name == map['role'],
         orElse: () => UserRole.user,
       ),
+      emailVerified: map['emailVerified'] ?? false,
       photoUrl: map['photoUrl'],
       fcmToken: map['fcmToken'],
       createdAt: (map['createdAt'] as Timestamp).toDate(),
+      emailVerifiedAt: (map['emailVerifiedAt'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -61,9 +67,13 @@ class UserModel {
       'email': email,
       'displayName': displayName,
       'role': role.name,
+      'emailVerified': emailVerified,
       'photoUrl': photoUrl,
       'fcmToken': fcmToken,
       'createdAt': Timestamp.fromDate(createdAt),
+      'emailVerifiedAt': emailVerifiedAt != null
+          ? Timestamp.fromDate(emailVerifiedAt!)
+          : null,
     };
   }
 
@@ -79,9 +89,11 @@ class UserModel {
       email: email ?? this.email,
       displayName: displayName ?? this.displayName,
       role: role ?? this.role,
+      emailVerified: emailVerified,
       photoUrl: photoUrl ?? this.photoUrl,
       fcmToken: fcmToken ?? this.fcmToken,
       createdAt: createdAt,
+      emailVerifiedAt: emailVerifiedAt,
     );
   }
 

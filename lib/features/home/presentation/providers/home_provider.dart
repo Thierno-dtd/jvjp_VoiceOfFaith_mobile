@@ -5,22 +5,13 @@ import '../../../../models/verse_model.dart';
 import '../../../../models/audio_model.dart';
 import '../../../../models/event_model.dart';
 import '../../../../models/post_model.dart';
-import '../../../../mockTest/app_config.dart';
-import '../../../../mockTest/mock_firestore_service.dart';
-import '../../../../mockTest/mock_bible_api_service.dart';
 
 // Provider du service Bible
 final bibleApiServiceProvider = Provider<BibleApiService>((ref) {
-  if (AppConfig.useMockData) {
-    return MockBibleApiService() as BibleApiService;
-  }
   return BibleApiService();
 });
 
 final homeFirestoreServiceProvider = Provider<FirestoreService>((ref) {
-  if (AppConfig.useMockData) {
-    return MockFirestoreService();
-  }
   return FirestoreService();
 });
 
