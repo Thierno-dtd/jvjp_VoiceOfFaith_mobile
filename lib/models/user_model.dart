@@ -25,6 +25,7 @@ class UserModel {
   final String email;
   final String displayName;
   final bool emailVerified;
+  final String? emailVerifiedUid;
   final UserRole role;
   final String? photoUrl;
   final String? fcmToken;
@@ -37,6 +38,7 @@ class UserModel {
     required this.displayName,
     required this.role,
     required this.emailVerified,
+    this.emailVerifiedUid,
     this.photoUrl,
     this.fcmToken,
     required this.createdAt,
@@ -54,6 +56,7 @@ class UserModel {
         orElse: () => UserRole.user,
       ),
       emailVerified: map['emailVerified'] ?? false,
+      emailVerifiedUid: map['emailVerifiedUid'] ?? null,
       photoUrl: map['photoUrl'],
       fcmToken: map['fcmToken'],
       createdAt: (map['createdAt'] as Timestamp).toDate(),
@@ -68,6 +71,7 @@ class UserModel {
       'displayName': displayName,
       'role': role.name,
       'emailVerified': emailVerified,
+      'emailVerifiedUid': emailVerifiedUid,
       'photoUrl': photoUrl,
       'fcmToken': fcmToken,
       'createdAt': Timestamp.fromDate(createdAt),
@@ -90,6 +94,7 @@ class UserModel {
       displayName: displayName ?? this.displayName,
       role: role ?? this.role,
       emailVerified: emailVerified,
+      emailVerifiedUid: emailVerifiedUid,
       photoUrl: photoUrl ?? this.photoUrl,
       fcmToken: fcmToken ?? this.fcmToken,
       createdAt: createdAt,
