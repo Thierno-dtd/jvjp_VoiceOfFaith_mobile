@@ -43,26 +43,30 @@ class SignUpNotifier extends StateNotifier<AsyncValue<void>> {
 
   SignUpNotifier(this._authService) : super(const AsyncValue.data(null));
 
-  Future<void> signUp({
+  Future<Map<String, dynamic>> signUpWithVerification({
     required String email,
     required String password,
     required String displayName,
   }) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      print('🔵 SignUp: Starting for $email');
 
-      await (_authService as AuthService).signUp(
+    try {
+      print('🔵 SignUp: Starting with verification for $email');
+
+      final result = await (_authService as AuthService).signUpWithVerification(
         email: email,
         password: password,
         displayName: displayName,
       );
 
-      print('🔵 SignUp: Success, waiting for auth state to propagate');
-      // Attendre que l'état d'auth se propage
-      await Future.delayed(const Duration(milliseconds: 1500));
-      print('🔵 SignUp: Complete');
-    });
+      state = const AsyncValue.data(null);
+
+      print('🔵 SignUp: Complete with token');
+      return result;
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+      rethrow;
+    }
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../features/auth/presentation/pages/email_verification_page.dart';
 import '../../features/auth/presentation/pages/onboarding_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
@@ -20,6 +21,7 @@ class AppRoutes {
   static const String events = '/events';
   static const String profile = '/profile';
   static const String donation = '/donations';
+  static const String emailVerification = '/email-verification';
 }
 
 class AppRouter {
@@ -34,6 +36,10 @@ class AppRouter {
     AppRoutes.events: (context) => const EventsPage(),
     AppRoutes.profile: (context) => const ProfilePage(),
     AppRoutes.donation: (context) => const DonationPage(),
+    AppRoutes.emailVerification: (context) => const EmailVerificationPage(
+      email: '',
+      verificationToken: '',
+    ),
   };
 
   /// Navigation vers une route en supprimant toutes les routes précédentes

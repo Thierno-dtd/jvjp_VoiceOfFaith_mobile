@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
-import 'login_page.dart';
 import '../../../../core/navigation/app_router.dart';
+import './email_verification_page.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -36,7 +36,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     if (!_acceptTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please accept the terms and conditions'),
+          content: Text('Veuillez accepter les conditions d\'utilisation'),
           backgroundColor: Colors.red,
         ),
       );
@@ -46,7 +46,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     try {
       print('🔵 RegisterPage: Starting signup process');
 
-      await ref.read(signUpProvider.notifier).signUp(
+      // Appeler la nouvelle méthode avec vérification
+      final result = await ref.read(signUpProvider.notifier).signUpWithVerification(
         email: _emailController.text.trim(),
         password: _passwordController.text,
         displayName: _nameController.text.trim(),
@@ -54,20 +55,20 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
       print('🔵 RegisterPage: SignUp completed');
 
-      // Afficher succès
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Compte créé avec succès !'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 1),
+        // Naviguer vers la page de vérification d'email
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EmailVerificationPage(
+              email: _emailController.text.trim(),
+              verificationToken: result['verificationToken'],
+            ),
           ),
         );
-
-        // La navigation sera gérée automatiquement par le listener dans MyApp
       }
 
-      print('🔵 RegisterPage: Navigation will be handled by MyApp listener');
+      print('🔵 RegisterPage: Navigated to EmailVerificationPage');
 
     } catch (e) {
       print('🔴 RegisterPage: Signup error - $e');

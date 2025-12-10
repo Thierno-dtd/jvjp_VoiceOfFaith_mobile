@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/user_model.dart';
+import 'package:uuid/uuid.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final _uuid = const Uuid();
 
   // Stream de l'utilisateur actuel avec logs
   Stream<User?> get authStateChanges {
@@ -74,6 +76,68 @@ class AuthService {
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> signUpWithVerification({
+    required String email,
+    required String password,
+    required String displayName,
+  }) async {
+    try {
+      print('🔵 AuthService: signUpWithVerification called for $email');
+
+      // Générer le token de vérification
+      final verificationToken = _uuid.v4();
+      print('🔑 Token de vérification généré: $verificationToken');
+
+      final userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      print('🔵 AuthService: User created with Firebase Auth');
+
+      final user = userCredential.user;
+      if (user == null) {
+        throw Exception('Erreur lors de la création du compte');
+      }
+
+      // Mettre à jour le displayName
+      await user.updateDisplayName(displayName);
+      print('🔵 AuthService: DisplayName updated');
+
+      // Créer le document utilisateur dans Firestore avec le token
+      final userModel = UserModel(
+        uid: user.uid,
+        email: email,
+        displayName: displayName,
+        emailVerified: false,
+        emailVerifiedUid: verificationToken, // Token de vérification
+        role: UserRole.user,
+        createdAt: DateTime.now(),
+      );
+
+      await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .set(userModel.toMap());
+
+      print('🔵 AuthService: User document created in Firestore');
+      print('🔵 AuthService: Current auth state - User: ${_auth.currentUser?.uid}');
+
+      // Retourner le user model et le token
+      return {
+        'userModel': userModel,
+        'verificationToken': verificationToken,
+      };
+    } on FirebaseAuthException catch (e) {
+      print('🔴 AuthService: FirebaseAuthException - ${e.code}: ${e.message}');
+      throw _handleAuthException(e);
+    } catch (e) {
+      print('🔴 AuthService: Unexpected error - $e');
+      rethrow;
+    }
+  }
+
 
   // Connexion
   Future<UserModel> signIn({
