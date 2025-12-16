@@ -74,21 +74,11 @@ class EmailVerificationNotifier extends StateNotifier<AsyncValue<void>> {
       final authService = _authService as AuthService;
       final currentUser = authService.currentUser;
 
-      if (currentUser == null) {
-        print('❌ Aucun utilisateur connecté');
-        return false;
-      }
+      // ✅ Récupère depuis Firestore
+      final userData = await authService.getUserData(currentUser!.uid);
 
-      print('🔍 Vérification du statut email pour: ${currentUser.uid}');
-
-      // Recharger les données utilisateur depuis Firestore
-      final userData = await authService.getUserData(currentUser.uid);
-
-      print('📊 EmailVerified: ${userData.emailVerified}');
-
-      return userData.emailVerified;
+      return userData.emailVerified;  // ✅ Vérifie le champ
     } catch (e) {
-      print('❌ Erreur vérification: $e');
       return false;
     }
   }
